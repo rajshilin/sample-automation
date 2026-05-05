@@ -1,52 +1,51 @@
 package tests;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
 
-public class LoginTest {
+import base.BaseTest;
+import pages.LoginPage;
+import utils.ExtentManager;
+import utils.ScreenshotUtil;	
 
-    WebDriver driver;
+public class LoginTest extends BaseTest {
 
-    @BeforeMethod
-    public void setup() {
-
-        WebDriverManager.chromedriver().setup();
-
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");        // Jenkins compatible
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-
-        driver = new ChromeDriver(options);
-    }
+    ExtentReports extent = ExtentManager.getInstance();
+    ExtentTest test;
 
     @Test
     public void loginLogoutTest() {
 
-        driver.get("https://practicetestautomation.com/practice-test-login/");
+        test = extent.createTest("Login Test");
 
-        driver.findElement(By.id("username")).sendKeys("student");
-        driver.findElement(By.id("password")).sendKeys("Password123");
+        LoginPage login = new LoginPage(driver);
 
-        driver.findElement(By.id("submit")).click();
+        login.open();
+        test.info("Opened login page");
 
-        boolean isLoggedIn = driver.getCurrentUrl().contains("logged-in");
-        System.out.println("Login Successful: " + isLoggedIn);
+        login.login("student", "Password123");
 
-        driver.findElement(By.linkText("Log out")).click();
+        Assert.assertTrue(login.isLoggedIn(), "Login Failed");
+        test.pass("Login successful");
+
+        login.logout();
     }
 
     @AfterMethod
-    public void teardown() {
-        if (driver != null) {
-            driver.quit();
+    public void reportFlush(ITestResult result) {
+
+        if (result.getStatus() == ITestResult.FAILURE) {
+            String path = ScreenshotUtil.capture(driver, result.getName());
+            test.fail("Test Failed",
+                    MediaEntityBuilder.createScreenCaptureFromPath(path).build());
         }
+
+        extent.flush();
     }
 }
