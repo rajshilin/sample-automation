@@ -3,16 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                url: 'https://github.com/rajshilin/sample-automation.git'
-            }
-        }
-
         stage('Build & Test') {
             steps {
-                bat 'mvn clean test'
+                bat '"C:\\Program Files\\Maven\\apache-maven-3.9.15\\bin\\mvn.cmd" clean test'
             }
         }
 
