@@ -28,7 +28,7 @@ pipeline {
             emailext(
                 subject: "✅ Build Success - ${env.JOB_NAME}",
                 body: "Build Passed 🚀",
-                to: "rajshilin@gmail.com",
+                to: "rajaccelya@gmail.com",
                 attachmentsPattern: "**/test-output/*.html"
             )
         }
@@ -37,7 +37,7 @@ pipeline {
             emailext(
                 subject: "❌ Build Failed - ${env.JOB_NAME}",
                 body: "Build Failed ❌",
-                to: "rajshilin@gmail.com"
+                to: "rajaccelya@gmail.com"
             )
         }
     }
