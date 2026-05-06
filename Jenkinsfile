@@ -26,7 +26,7 @@ pipeline {
     post {
         always {
             emailext(
-                to: 'rajaccelya@gmail.com',
+                to: 'rajaccelya@gmail.com, rajendrashilin@gmail.com',
                 subject: "Build ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                 <h3>Build Status: ${currentBuild.currentResult}</h3>
