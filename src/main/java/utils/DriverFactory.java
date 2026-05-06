@@ -2,20 +2,24 @@ package utils;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class DriverFactory {
 
-    public static WebDriver initDriver() {
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
+    public static void initDriver() {
         WebDriverManager.chromedriver().setup();
+        driver.set(new ChromeDriver());
+    }
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
 
-        return new ChromeDriver(options);
+    public static void quitDriver() {
+        driver.get().quit();
+        driver.remove();
     }
 }
