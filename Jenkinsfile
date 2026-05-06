@@ -3,9 +3,10 @@ pipeline {
 
     stages {
 
-        stage('Clean') {
+        stage('Checkout') {
             steps {
-                deleteDir()
+                git branch: 'main',
+                url: 'https://github.com/rajshilin/sample-automation.git'
             }
         }
 
@@ -17,7 +18,7 @@ pipeline {
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: '**/test-output/**/*', allowEmptyArchive: true
+                archiveArtifacts artifacts: '**/test-output/*', allowEmptyArchive: true
             }
         }
     }
@@ -25,18 +26,18 @@ pipeline {
     post {
         success {
             emailext(
-                subject: "Build Success ✅",
-                body: "Automation Passed",
-                to: "rajendrashilin@gmail.com",
-                attachmentsPattern: 'test-output/ExtentReport.html'
+                subject: "✅ Build Success - ${env.JOB_NAME}",
+                body: "Build Passed 🚀",
+                to: "rajshilin@gmail.com",
+                attachmentsPattern: "**/test-output/*.html"
             )
         }
+
         failure {
             emailext(
-                subject: "Build Failed ❌",
-                body: "Automation Failed",
-                to: "rajendrashilin@gmail.com",
-                attachmentsPattern: 'test-output/ExtentReport.html'
+                subject: "❌ Build Failed - ${env.JOB_NAME}",
+                body: "Build Failed ❌",
+                to: "rajshilin@gmail.com"
             )
         }
     }
