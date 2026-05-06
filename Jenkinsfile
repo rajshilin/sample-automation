@@ -18,26 +18,32 @@ pipeline {
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: '**/test-output/*', allowEmptyArchive: true
+                archiveArtifacts artifacts: '**/test-output/**/*', allowEmptyArchive: true
             }
         }
     }
 
     post {
-        success {
+        always {
             emailext(
-                subject: "✅ Build Success - ${env.JOB_NAME}",
-                body: "Build Passed 🚀",
-                to: "rajaccelya@gmail.com",
-                attachmentsPattern: "**/test-output/*.html"
-            )
-        }
+                to: 'rajaccelya@gmail.com',
+                subject: "Build ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                <h3>Build Status: ${currentBuild.currentResult}</h3>
 
-        failure {
-            emailext(
-                subject: "❌ Build Failed - ${env.JOB_NAME}",
-                body: "Build Failed ❌",
-                to: "rajaccelya@gmail.com"
+                <p><b>Job:</b> ${env.JOB_NAME}</p>
+                <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+
+                <p><b>Extent Report:</b><br>
+                <a href="${env.BUILD_URL}artifact/test-output/ExtentReport.html">
+                Click to view report
+                </a></p>
+
+                <p>Regards,<br>Jenkins CI</p>
+                """,
+                mimeType: 'text/html',
+                attachLog: true
             )
         }
     }
